@@ -17,12 +17,12 @@ export class Flow<C extends FlowContextType> extends Queue {
     startup: async () => {},
   };
 
-  name(name: string) {
+  name(name: string): Flow<C> {
     this.workflow.name = name;
     return this;
   }
 
-  context(constructor: new (params: Partial<C>) => C) {
+  context(constructor: new (params: Partial<C>) => C): Flow<C> {
     this.workflow.contextConstructor = (params) => new constructor(params);
     return this;
   }
@@ -33,7 +33,7 @@ export class Flow<C extends FlowContextType> extends Queue {
       handler: FlowTaskHandlerType<C, S>;
       initState?: () => S;
     },
-  ) {
+  ): string {
     const taskState: S = args.initState ? args.initState() : {} as S;
     const taskName = `[${this.workflow.name}] ${args.name}`;
 
@@ -59,7 +59,7 @@ export class Flow<C extends FlowContextType> extends Queue {
   next(
     name: string,
     params?: Partial<C> | Array<Partial<C>>,
-  ) {
+  ): void {
     if (params) {
       if (params instanceof Array) {
         params.forEach((entry) => {
@@ -74,12 +74,12 @@ export class Flow<C extends FlowContextType> extends Queue {
     }
   }
 
-  startup(handler: FlowStartupHandlerType<C>) {
+  startup(handler: FlowStartupHandlerType<C>): Flow<C> {
     this.workflow.startup = () => handler((...args) => this.next(...args));
     return this;
   }
 
-  async start() {
+  async start(): Promise<void> {
     for (const topic in this.workflow.tasks) {
       const task = this.workflow.tasks[topic];
       this.sub(task.name, task.handler);
