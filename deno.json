@@ -1,7 +1,9 @@
 {
+  "name": "@vseplet/pflow"
   "version": "0.1.0",
   "licence": "MIT",
   "tasks": {
   },
-  "imports": {}
+  "imports": {},
+  "exports": "./source/mod.ts"
 }
